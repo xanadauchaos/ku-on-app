@@ -510,8 +510,10 @@
     font-size:12.5px; font-family:'Inter',sans-serif; color:var(--muted);
     background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09);
     border-radius:10px; padding:8px 12px; cursor:pointer; transition:all .25s ease;
+    outline:none; -webkit-tap-highlight-color:transparent;
   }
   .pattern-select button.active, .duration-select button.active{ border-color:var(--breath); color:var(--breath); background:var(--breath-dim); }
+  .pattern-select button:focus-visible, .duration-select button:focus-visible{ outline:2px solid var(--breath); outline-offset:3px; }
   .pattern-select button:disabled, .duration-select button:disabled{ opacity:0.35; cursor:not-allowed; }
   .start-row{ display:flex; justify-content:center; margin-top:4px; }
   .session-settings[open] + .start-row{padding-bottom:24px;scroll-margin-bottom:calc(var(--nav-space) + var(--safe-bottom))}
@@ -2141,11 +2143,12 @@
   updateAudioMix({persist:false});
 
   patternSelect.addEventListener('click', (e)=>{
-    if(e.target.tagName !== 'BUTTON' || e.target.disabled) return;
+    const button = e.target.closest('button');
+    if(!button || !patternSelect.contains(button) || button.disabled) return;
     [...patternSelect.children].forEach(b=>b.classList.remove('active'));
-    e.target.classList.add('active');
-    pattern = e.target.dataset.pattern.split('-').map(Number);
-    patternName = e.target.dataset.name;
+    button.classList.add('active');
+    pattern = button.dataset.pattern.split('-').map(Number);
+    patternName = button.dataset.name;
     breathScene.classList.remove('mode-box','mode-release','mode-even');
     breathScene.classList.add('mode-'+patternName);
     if(running){ endSession('manual'); startBreathing(); }
